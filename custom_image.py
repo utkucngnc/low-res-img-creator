@@ -1,5 +1,5 @@
 from PIL import Image, ImageFilter
-from typing import Any, Optional
+from typing import Any
 import torch as th
 import numpy as np
 import os
@@ -30,7 +30,17 @@ class ImageProcessor:
 
     def addSaltAndPepperNoise(self, prob):
         self.checkLoad()
-        pass
+        if prob > 1 or prob < 0:
+            raise ValueError("Probability must be between 0 and 1")
+        random_image_arr = np.random.choice(
+                                            [0, 1, np.nan], 
+                                            p = [prob / 2, 1 - prob, prob / 2], 
+                                            size = self.img.shape
+                                            )
+        modified_img = self.img.astype(np.float32) * random_image_arr
+        self.img = np.nan_to_num(modified_img, nan = 255).astype(np.uint8)
+        self.getPIL(self.img)
+        return self
 
     def addThreshold(self, threshold_scale: float):
         self.checkLoad()
@@ -109,7 +119,6 @@ class ImageProcessor:
         self.img_pil.show()
     
     def load(self, loc: Any):
-
         if isinstance(loc, str):
             self.load_from_path(loc)
         elif isinstance(loc, th.Tensor):

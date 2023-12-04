@@ -11,6 +11,7 @@ def createDataset(
                     resize: tuple[int, int] = None,
                     rescale: float = None,
                     gaussian_noise: tuple[float, float] = None,
+                    salt_and_pepper: float = None,
                     normalize: bool = False,
                     downAndUpSample: float = None,
                     addMotionBlur: bool = False,
@@ -23,6 +24,8 @@ def createDataset(
         if gaussian_noise is not None:
             mean, std = gaussian_noise
             obj.addGaussianNoise(mean, std)
+        if salt_and_pepper is not None:
+            obj.addSaltAndPepperNoise(salt_and_pepper)
         if downAndUpSample is not None:
             obj.downAndUpSample(downAndUpSample)
         if addMotionBlur:
@@ -37,15 +40,18 @@ def createDataset(
             obj.show()
 
 if __name__ == '__main__':
-    load_path = '../Pristine/PTY_pristine_raw.tif'
-    save_path = './data/'
-    ext = 'png'
-    createDataset(
-                    load_path, 
-                    save_path, 
-                    ext, 
-                    normalize = True,
-                    downAndUpSample=0.5,
-                    addMotionBlur = True
-                    )
+    args = {
+        'load_path': '../Pristine/PTY_pristine_raw.tif',
+        'save_path': './data/',
+        'ext': 'png',
+        'resize': None,
+        'rescale': None,
+        'gaussian_noise': (0, 0.1),
+        'salt_and_pepper': 0.1,
+        'normalize': True,
+        'downAndUpSample': 0.5,
+        'addMotionBlur': True,
+        'show': False
+    }
+    createDataset(**args)
     print('Done.')
